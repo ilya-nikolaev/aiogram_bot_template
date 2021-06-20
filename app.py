@@ -10,9 +10,9 @@ from sqlalchemy.orm import sessionmaker
 
 from bot_data import load_config
 from bot_data.db_api.base import Base
+from bot_data.handlers.users.start import register_start
 from bot_data.middlewares.db_middleware import DBMiddleware
 from bot_data.middlewares.user_middleware import UserMiddleware
-from bot_data.handlers.users.start import register_start
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from sqlalchemy.sql.expression import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import select
+
 from bot_data.db_api.models import User
 
 
