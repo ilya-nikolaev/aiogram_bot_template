@@ -13,19 +13,18 @@ class UserMiddleware(BaseMiddleware):
     
     async def on_process_message(self, m: types.Message, data: dict):
         user = await self.get_user(m.from_user.id, data['db'])
-        self.check_user(user)
+        self.check_banned(user)
         data["user"] = user
     
     async def on_process_callback_query(self, cq: types.CallbackQuery, data: dict):
         user = await self.get_user(cq.from_user.id, data['db'])
-        self.check_user(user)
+        self.check_banned(user)
         data["user"] = user
     
     @staticmethod
-    def check_user(user: User):
-        if user is not None:
-            if user.banned:
-                raise CancelHandler()
+    def check_banned(user: User):
+        if getattr(user, 'banned', False):
+            raise CancelHandler()
     
     @staticmethod
     async def get_user(user_id: int, db: AsyncSession) -> User:
