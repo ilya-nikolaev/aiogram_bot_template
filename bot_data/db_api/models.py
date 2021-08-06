@@ -1,13 +1,12 @@
-from sqlalchemy import Column, BIGINT, TEXT, DECIMAL, BOOLEAN, false
+from sqlalchemy import Column, BIGINT, TEXT, BOOLEAN, false
+
 from .base import Base
 
 
 class User(Base):
     __tablename__ = 'users'
     
-    id = Column(BIGINT, primary_key=True)
-    
-    tg_id = Column(BIGINT, nullable=False, unique=True)
+    tg_id = Column(BIGINT, primary_key=True)
     username = Column(TEXT, nullable=True, unique=True)
     
     banned = Column(BOOLEAN, nullable=False, default=false())
