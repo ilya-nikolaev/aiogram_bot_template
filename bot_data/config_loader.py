@@ -1,10 +1,12 @@
-from environs import Env
 from dataclasses import dataclass
+
+from environs import Env
 
 
 @dataclass
 class BotSettings:
     token: str
+    admins: list[int]
     use_redis: bool
 
 
@@ -29,7 +31,8 @@ def load_config() -> Config:
     return Config(
         bot_settings=BotSettings(
             token=env.str("TG_BOT_TOKEN"),
-            use_redis=env.bool("USE_REDIS")
+            use_redis=env.bool("USE_REDIS"),
+            admins=[int(admin_id) for admin_id in env.list("ADMINS")]
         ),
         db_settings=DBSettings(
             host=env.str("DB_HOST"),

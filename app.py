@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from bot_data import load_config
 from bot_data.db_api.base import Base
+from bot_data.filters.bot_admin_filter import BotAdminFilter
 from bot_data.handlers.users.start import register_start
 from bot_data.middlewares.db_middleware import DBMiddleware
 from bot_data.middlewares.user_middleware import UserMiddleware
@@ -35,7 +36,7 @@ def setup_middlewares(dp: Dispatcher, db_factory: sessionmaker):
 
 
 def setup_filters(dp: Dispatcher):
-    pass
+    dp.filters_factory.bind(BotAdminFilter)
 
 
 async def main():
