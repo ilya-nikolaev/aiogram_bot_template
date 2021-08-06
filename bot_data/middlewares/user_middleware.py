@@ -12,21 +12,39 @@ class UserMiddleware(BaseMiddleware):
         super(UserMiddleware, self).__init__()
     
     async def on_process_message(self, m: types.Message, data: dict):
-        user = await self.get_user(m.from_user.id, data['db'])
-        self.check_banned(user)
-        data["user"] = user
+        await self.process_user(m.from_user, data)
     
     async def on_process_callback_query(self, cq: types.CallbackQuery, data: dict):
-        user = await self.get_user(cq.from_user.id, data['db'])
-        self.check_banned(user)
+        await self.process_user(cq.from_user, data)
+    
+    async def process_user(self, user: types.User, data: dict):
+        user, is_new_user = await self.get_user(user, data['db'])
+        
+        if user.banned:
+            raise CancelHandler()
+        
+        data["is_new_user"] = is_new_user
         data["user"] = user
     
     @staticmethod
-    def check_banned(user: User):
-        if getattr(user, 'banned', False):
-            raise CancelHandler()
-    
-    @staticmethod
-    async def get_user(user_id: int, db: AsyncSession) -> User:
-        result = await db.execute(select(User).where(User.tg_id == user_id))
-        return result.scalars().first()
+    async def get_user(tg_user: types.User, db: AsyncSession) -> tuple[User, bool]:
+        result = await db.execute(select(User).where(User.tg_id == tg_user.id))
+        user = result.scalars().first()
+        
+        if user is None:
+            user = User(tg_id=tg_user.id, username=tg_user.username)
+            
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+
+            is_new_user = True
+        else:
+            is_new_user = False
+        
+        if user.username != tg_user.username:
+            user.username = tg_user.username
+            await db.commit()
+            await db.refresh(user)
+        
+        return user, is_new_user
