@@ -4,7 +4,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 
-from bot_data.db_api.models import User
+from app.db_api.models import User
 
 
 class UserMiddleware(BaseMiddleware):

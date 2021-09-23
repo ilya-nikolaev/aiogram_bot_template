@@ -1,7 +1,7 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import CommandStart
 
-from bot_data.filters.bot_admin_filter import BotAdminFilter
+from app.filters.bot_admin_filter import BotAdminFilter
 
 
 async def start_process_message(m: types.Message, is_new_user: bool):

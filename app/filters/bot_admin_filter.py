@@ -3,7 +3,7 @@ from typing import Union
 from aiogram import types
 from aiogram.dispatcher.filters import Filter
 
-from bot_data import load_config
+from app import load_config
 
 
 class BotAdminFilter(Filter):

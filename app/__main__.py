@@ -8,12 +8,12 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from bot_data import load_config
-from bot_data.db_api.base import Base
-from bot_data.filters.bot_admin_filter import BotAdminFilter
-from bot_data.handlers.users.start import register_start
-from bot_data.middlewares.db_middleware import DBMiddleware
-from bot_data.middlewares.user_middleware import UserMiddleware
+from app import load_config
+from app.db_api.base import Base
+from app.filters.bot_admin_filter import BotAdminFilter
+from app.handlers.users.start import register_start
+from app.middlewares.db_middleware import DBMiddleware
+from app.middlewares.user_middleware import UserMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +44,9 @@ async def main():
         format=u"%(filename)s:%(lineno)-d #%(levelname)-16s [%(asctime)s] %(message)s",
         level=logging.INFO
     )
-    
+
     config = load_config()
-    
+
     db_engine = create_async_engine(
         f"postgresql+asyncpg://"
         f"{config.db_settings.user}:"
@@ -54,27 +54,27 @@ async def main():
         f"{config.db_settings.host}/"
         f"{config.db_settings.name}"
     )
-    
+
     async with db_engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
-    
+
     db_factory = create_db_factory(db_engine)
-    
+
     if config.bot_settings.use_redis:
         storage = RedisStorage()
     else:
         storage = MemoryStorage()
-    
+
     bot = Bot(
         token=config.bot_settings.token,
         parse_mode=aiogram.types.ParseMode.HTML
     )
     dp = Dispatcher(bot=bot, storage=storage)
-    
+
     setup_middlewares(dp, db_factory)
     setup_filters(dp)
     setup_handlers(dp)
-    
+
     try:
         logging.info("Everything is ready to launch!")
         await dp.start_polling()
