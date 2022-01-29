@@ -10,7 +10,7 @@ from app.db_api.models import User
 class UserMiddleware(BaseMiddleware):
     def __init__(self):
         super(UserMiddleware, self).__init__()
-    
+
     async def on_process_message(self, m: types.Message, data: dict):
         await self.process_user(m.from_user, data)
     
@@ -30,17 +30,16 @@ class UserMiddleware(BaseMiddleware):
     async def get_user(tg_user: types.User, db: AsyncSession) -> tuple[User, bool]:
         result = await db.execute(select(User).where(User.tg_id == tg_user.id))
         user = result.scalars().first()
-        
+
+        is_new_user = False
         if user is None:
             user = User(tg_id=tg_user.id, username=tg_user.username)
-            
             db.add(user)
+
             await db.commit()
             await db.refresh(user)
 
             is_new_user = True
-        else:
-            is_new_user = False
         
         if user.username != tg_user.username:
             user.username = tg_user.username
