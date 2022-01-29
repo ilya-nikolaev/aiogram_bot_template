@@ -2,7 +2,6 @@ from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import select
 
 from app.db_api.models import User
 
@@ -17,33 +16,32 @@ class UserMiddleware(BaseMiddleware):
     async def on_process_callback_query(self, cq: types.CallbackQuery, data: dict):
         await self.process_user(cq.from_user, data)
     
-    async def process_user(self, user: types.User, data: dict):
-        user, is_new_user = await self.get_user(user, data['db'])
+    async def process_user(self, db_user: types.User, data: dict):
+        db_user, is_new_user = await self.get_user(db_user, data['db'])
         
-        if user.banned:
+        if db_user.banned:
             raise CancelHandler()
         
         data["is_new_user"] = is_new_user
-        data["user"] = user
+        data["user"] = db_user
     
     @staticmethod
     async def get_user(tg_user: types.User, db: AsyncSession) -> tuple[User, bool]:
-        result = await db.execute(select(User).where(User.tg_id == tg_user.id))
-        user = result.scalars().first()
+        db_user = db.get(User, tg_user.id)
 
         is_new_user = False
-        if user is None:
-            user = User(tg_id=tg_user.id, username=tg_user.username)
-            db.add(user)
+        if db_user is None:
+            db_user = User(tg_id=tg_user.id, username=tg_user.username)
+            db.add(db_user)
 
             await db.commit()
-            await db.refresh(user)
+            await db.refresh(db_user)
 
             is_new_user = True
         
-        if user.username != tg_user.username:
-            user.username = tg_user.username
+        if db_user.username != tg_user.username:
+            db_user.username = tg_user.username
             await db.commit()
-            await db.refresh(user)
+            await db.refresh(db_user)
         
-        return user, is_new_user
+        return db_user, is_new_user
