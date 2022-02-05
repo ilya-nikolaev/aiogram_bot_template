@@ -27,7 +27,7 @@ class UserMiddleware(BaseMiddleware):
     
     @staticmethod
     async def get_user(tg_user: types.User, db: AsyncSession) -> tuple[User, bool]:
-        db_user = db.get(User, tg_user.id)
+        db_user = await db.get(User, tg_user.id)
 
         is_new_user = False
         if db_user is None:
