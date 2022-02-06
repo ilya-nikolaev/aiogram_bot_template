@@ -30,14 +30,15 @@ class UserMiddleware(BaseMiddleware):
         db_user = await db.get(User, tg_user.id)
 
         is_new_user = False
+        user_updated = False
+
         if db_user is None:
             db_user = User(tg_id=tg_user.id, username=tg_user.username)
             db.add(db_user)
 
             is_new_user = True
 
-        user_updated = False
-        if db_user.username != tg_user.username:
+        elif db_user.username != tg_user.username:
             db_user.username = tg_user.username
             user_updated = True
 
