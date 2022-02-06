@@ -34,13 +34,14 @@ class UserMiddleware(BaseMiddleware):
             db_user = User(tg_id=tg_user.id, username=tg_user.username)
             db.add(db_user)
 
-            await db.commit()
-            await db.refresh(db_user)
-
             is_new_user = True
-        
+
+        user_updated = False
         if db_user.username != tg_user.username:
             db_user.username = tg_user.username
+            user_updated = True
+
+        if user_updated or is_new_user:
             await db.commit()
             await db.refresh(db_user)
         
