@@ -26,7 +26,6 @@ class Config:
 
 def load_config() -> Config:
     env = Env()
-    env.read_env()
     
     return Config(
         bot_settings=BotSettings(
