@@ -16,8 +16,8 @@ class UserMiddleware(BaseMiddleware):
     async def on_process_callback_query(self, cq: types.CallbackQuery, data: dict):
         await self.process_user(cq.from_user, data)
     
-    async def process_user(self, db_user: types.User, data: dict):
-        db_user, is_new_user = await self.get_user(db_user, data['db'])
+    async def process_user(self, tg_user: types.User, data: dict):
+        db_user, is_new_user = await self.get_user(tg_user, data['db'])
         
         if db_user.banned:
             raise CancelHandler()
