@@ -4,15 +4,12 @@ from aiogram.dispatcher.filters import CommandStart
 from app.filters.bot_admin_filter import BotAdminFilter
 
 
-async def start_process_message(m: types.Message, is_new_user: bool):
-    if is_new_user:
-        await m.answer("Hello!")
-    else:
-        await m.answer("We've already met!")
+async def start_process_message(m: types.Message):
+    await m.answer("Hello!")
 
 
 async def admin_start_process_message(m: types.Message):
-    await m.answer("Welcome, Administrator!")
+    await m.answer("Hello, admin!")
 
 
 def register_start(dp: Dispatcher):
