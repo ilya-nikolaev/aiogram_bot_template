@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from os import getenv
 
-from environs import Env
+from app.config.utils import str_to_bool, int_list_from_str
 
 
 @dataclass
@@ -25,18 +26,16 @@ class Config:
 
 
 def load_config() -> Config:
-    env = Env()
-    
     return Config(
         bot_settings=BotSettings(
-            token=env.str("TG_BOT_TOKEN"),
-            use_redis=env.bool("USE_REDIS"),
-            admins=[int(admin_id) for admin_id in env.list("ADMINS")]
+            token=getenv("TG_BOT_TOKEN"),
+            use_redis=str_to_bool(getenv("USE_REDIS")),
+            admins=int_list_from_str(getenv("ADMINS"))
         ),
         db_settings=DBSettings(
-            host=env.str("DB_HOST"),
-            name=env.str("DB_NAME"),
-            user=env.str("DB_USER"),
-            pswd=env.str("DB_PSWD"),
+            host=getenv("DB_HOST"),
+            name=getenv("DB_NAME"),
+            user=getenv("DB_USER"),
+            pswd=getenv("DB_PSWD")
         )
     )
