@@ -7,9 +7,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from app import load_config
-from app.db.base import Base
-from app.db.utils import create_async_engine_from_config, create_async_db_factory
+from config.loader import load_config
+from db.utils import create_async_engine_from_config, create_async_db_factory
 from app.filters.bot_admin_filter import BotAdminFilter
 from app.handlers.users.start import register_start
 from app.middlewares.db_middleware import DBMiddleware
@@ -40,10 +39,6 @@ async def main():
     config = load_config()
 
     db_engine = create_async_engine_from_config(config)
-
-    async with db_engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
-
     db_factory = create_async_db_factory(db_engine)
 
     if config.bot_settings.use_redis:

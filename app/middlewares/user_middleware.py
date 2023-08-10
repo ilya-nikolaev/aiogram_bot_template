@@ -3,7 +3,7 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import User
+from db.models import User
 
 
 class UserMiddleware(BaseMiddleware):
@@ -29,7 +29,7 @@ class UserMiddleware(BaseMiddleware):
         db_user = await db.get(User, tg_user.id)
 
         if db_user is None:
-            db_user = User(tg_id=tg_user.id, username=tg_user.username)
+            db_user = User(id=tg_user.id, username=tg_user.username)
             db.add(db_user)
             await db.commit()
 

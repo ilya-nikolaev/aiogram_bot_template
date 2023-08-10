@@ -5,13 +5,13 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy import false
 from sqlalchemy.sql.functions import now
 
-from app.db.base import Base
+from db.base import Base
 
 
 class User(Base):
     __tablename__ = "users"
     
-    tg_id: Mapped[int] = mapped_column(BIGINT, primary_key=True)
+    id: Mapped[int] = mapped_column(BIGINT, primary_key=True)
 
     username: Mapped[str] = mapped_column(TEXT, nullable=True, unique=True)
 

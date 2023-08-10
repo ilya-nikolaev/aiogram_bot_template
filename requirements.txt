@@ -2,3 +2,4 @@ aiogram~=2.25.1
 asyncpg~=0.28.0
 sqlalchemy~=2.0.19
 aioredis~=2.0.1
+alembic~=1.11.2
