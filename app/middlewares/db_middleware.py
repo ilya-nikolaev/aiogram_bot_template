@@ -1,12 +1,11 @@
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 class DBMiddleware(LifetimeControllerMiddleware):
     skip_patterns = ["error", "update"]
     
-    def __init__(self, db_factory: sessionmaker):
+    def __init__(self, db_factory: async_sessionmaker):
         super().__init__()
         self.db_factory = db_factory
 

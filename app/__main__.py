@@ -5,11 +5,11 @@ import aiogram.types
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app import load_config
 from app.db.base import Base
+from app.db.utils import create_async_engine_from_config, create_async_db_factory
 from app.filters.bot_admin_filter import BotAdminFilter
 from app.handlers.users.start import register_start
 from app.middlewares.db_middleware import DBMiddleware
@@ -18,19 +18,11 @@ from app.middlewares.user_middleware import UserMiddleware
 logger = logging.getLogger(__name__)
 
 
-def create_db_factory(db_engine: AsyncEngine):
-    return sessionmaker(
-        bind=db_engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
-
 def setup_handlers(dp: Dispatcher):
     register_start(dp)
 
 
-def setup_middlewares(dp: Dispatcher, db_factory: sessionmaker):
+def setup_middlewares(dp: Dispatcher, db_factory: async_sessionmaker):
     dp.middleware.setup(DBMiddleware(db_factory))
     dp.middleware.setup(UserMiddleware())
 
@@ -47,18 +39,12 @@ async def main():
 
     config = load_config()
 
-    db_engine = create_async_engine(
-        f"postgresql+asyncpg://"
-        f"{config.db_settings.user}:"
-        f"{config.db_settings.pswd}@"
-        f"{config.db_settings.host}/"
-        f"{config.db_settings.name}"
-    )
+    db_engine = create_async_engine_from_config(config)
 
     async with db_engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
 
-    db_factory = create_db_factory(db_engine)
+    db_factory = create_async_db_factory(db_engine)
 
     if config.bot_settings.use_redis:
         storage = RedisStorage()
