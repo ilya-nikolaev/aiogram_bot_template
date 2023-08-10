@@ -3,7 +3,7 @@ from sqlalchemy import Column
 from sqlalchemy import false
 from sqlalchemy.sql.functions import now
 
-from app.db_api.base import Base
+from app.db.base import Base
 
 
 class User(Base):

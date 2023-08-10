@@ -3,7 +3,7 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db_api.models import User
+from app.db.models import User
 
 
 class UserMiddleware(BaseMiddleware):

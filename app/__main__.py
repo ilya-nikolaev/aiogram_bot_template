@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSessio
 from sqlalchemy.orm import sessionmaker
 
 from app import load_config
-from app.db_api.base import Base
+from app.db.base import Base
 from app.filters.bot_admin_filter import BotAdminFilter
 from app.handlers.users.start import register_start
 from app.middlewares.db_middleware import DBMiddleware
