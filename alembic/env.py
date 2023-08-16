@@ -6,9 +6,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from config.loader import load_config
 from db.models import Base
 from db.utils import get_db_url
-from config.loader import load_config
 
 config = context.config
 if config.config_file_name is not None:

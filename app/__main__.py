@@ -7,12 +7,12 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from config.loader import load_config
-from db.utils import create_async_engine_from_config, create_async_db_factory
 from app.filters.bot_admin_filter import BotAdminFilter
 from app.handlers.users.start import register_start
 from app.middlewares.db_middleware import DBMiddleware
 from app.middlewares.user_middleware import UserMiddleware
+from config.loader import load_config
+from db.utils import create_async_engine_from_config, create_async_db_factory
 
 logger = logging.getLogger(__name__)
 
