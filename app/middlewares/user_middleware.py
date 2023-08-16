@@ -17,7 +17,7 @@ class UserMiddleware(BaseMiddleware):
         await self.process_user(cq.from_user, data)
     
     async def process_user(self, tg_user: types.User, data: dict):
-        db_user = await self.get_user(tg_user, data['db'])
+        db_user = await self.get_or_create_user(tg_user, data['db'])
         
         if db_user.banned:
             raise CancelHandler()
@@ -25,17 +25,20 @@ class UserMiddleware(BaseMiddleware):
         data["user"] = db_user
     
     @staticmethod
-    async def get_user(tg_user: types.User, db: AsyncSession) -> User:
+    async def get_or_create_user(tg_user: types.User, db: AsyncSession) -> User:
+        new_db_user = User(
+            id=tg_user.id,
+            username=tg_user.username,
+        )
+
         db_user = await db.get(User, tg_user.id)
-
         if db_user is None:
-            db_user = User(id=tg_user.id, username=tg_user.username)
+            db_user = new_db_user
             db.add(db_user)
-            await db.commit()
+        else:
+            await db.merge(new_db_user)
 
-        elif db_user.username != tg_user.username:
-            db_user.username = tg_user.username
-            await db.commit()
-
+        await db.commit()
         await db.refresh(db_user)
+
         return db_user
